@@ -20,7 +20,7 @@ def main():
     if mode not in modes:
         raise ValueError("Invalid mode")
 
-    weight = int(input("Weight (1-7) meaning 100-700:")) * 100
+    weight = int(input("Weight (100-700 by 100):"))
     if weight not in range(100, 800, 100):
         raise ValueError("Weight must be between 100 and 700")
 
@@ -32,11 +32,11 @@ def main():
     if size not in sizes:
         raise ValueError(f"Optical size must be one of the following: {sizes}")
 
-    folder = f"{path}/symbols/web/"
+    folder = f"{path}/symbols/web"
 
     modename = f"materialsymbols{mode}"
 
-    weight_t = "" if weight == 400 else f"_wght{weight}"
+    weight_t = "" if weight == 400 else f"wght{weight}"
 
     if grade == -25:
         grade_t = "gradN25"
@@ -51,19 +51,25 @@ def main():
 
     size_t = f"_{size}px"
 
+    prefix = "_" if fill_t or grade_t or weight_t else ""
+
     # folder to write to
-    outputpath = f"./materialsymbols_{mode}{weight_t}{grade_t}{fill_t}{size_t}"
+    outputpath = f"./materialsymbols_{mode}{prefix}{weight_t}{grade_t}{fill_t}{size_t}"
 
     os.makedirs(outputpath, exist_ok=True)
 
     for icon_name in os.listdir(folder):
+        if icon_name.startswith("."):
+            continue
+
         basepath = f"{folder}/{icon_name}/{modename}"
 
         # weight -> grad -> fill -> size
-        iconpath = f"{basepath}/{icon_name}{weight_t}{grade_t}{fill_t}{size_t}{ext}"
+        iconpath = f"{basepath}/{icon_name}{prefix}{weight_t}{grade_t}{fill_t}{size_t}{ext}"
 
         if not os.path.exists(iconpath):
-            raise ValueError(f"Icon not found. This shouldn't really happen. path: {iconpath}")
+            print(f"Icon not found. This shouldn't really happen. path: {iconpath}")
+            continue
 
         # e.g.: mso_bell.svg
         filename = f"{icon_name}{ext}"
@@ -74,6 +80,8 @@ def main():
         else:
             # preserve metadata
             copy2(src=iconpath, dst=path)
+
+    print(f"Saved to: {outputpath}")
 
 
 if __name__ == '__main__':
