@@ -82,6 +82,7 @@ def main():
             copy2(src=iconpath, dst=path)
 
     print(f"Saved to: {outputpath}")
+    print("Now fantasticon.sh")
 
 
 if __name__ == '__main__':

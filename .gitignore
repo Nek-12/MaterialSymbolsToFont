@@ -101,4 +101,6 @@ dmypy.json
 .pyre/
 .pytype/
 cython_debug/
-./materialsymbols_*
+
+## Custom
+**/materialsymbols_*
