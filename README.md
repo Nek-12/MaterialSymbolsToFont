@@ -9,7 +9,7 @@ To run:
   You can use github dir downloader: https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2Fgoogle%2Fmaterial-design-icons%2Ftree%2Fmaster%2Fsymbols%2Fweb
 3. Run `main.py`
 3. Follow the instructions in the terminal
-4. Install https://github.com/tancredi/fantasticon in your system
+4. Install https://github.com/tancredi/fantasticon to your system
 5. Run `fantasticon.sh` and follow instructions
 6. Upload the font to https://android-iconics.mikepenz.com/ and download the resulting classes
 7. Place the resulting class in your code
