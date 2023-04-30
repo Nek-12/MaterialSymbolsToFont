@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import webbrowser
 from shutil import copy2
@@ -11,9 +12,9 @@ generator_webui_url = "https://android-iconics.mikepenz.com/"
 
 
 def main():
-    path = input("Path to material design icons root folder: ")
+    input_path = input("Path to material design icons root folder: ").strip()
 
-    if not os.path.exists(path) or not os.path.isdir(path):
+    if not os.path.exists(input_path) or not os.path.isdir(input_path):
         raise ValueError("Path is not a directory or does not exist")
 
     fill = input("Fill? (y/n): ").lower() == "y"
@@ -34,7 +35,7 @@ def main():
     if size not in sizes:
         raise ValueError(f"Optical size must be one of the following: {sizes}")
 
-    folder = f"{path}/symbols/web"
+    folder = f"{input_path}/symbols/web"
 
     modename = f"materialsymbols{mode}"
 
@@ -56,37 +57,42 @@ def main():
     prefix = "_" if fill_t or grade_t or weight_t else ""
 
     # folder to write to
-    outputpath = f"./materialsymbols_{mode}{prefix}{weight_t}{grade_t}{fill_t}{size_t}"
+    output_path = f"./materialsymbols_{mode}{prefix}{weight_t}{grade_t}{fill_t}{size_t}"
 
-    os.makedirs(outputpath, exist_ok=True)
+    os.makedirs(output_path, exist_ok=True)
 
     for icon_name in os.listdir(folder):
         if icon_name.startswith("."):
             continue
 
-        basepath = f"{folder}/{icon_name}/{modename}"
+        base_path = f"{folder}/{icon_name}/{modename}"
 
         # weight -> grad -> fill -> size
-        iconpath = f"{basepath}/{icon_name}{prefix}{weight_t}{grade_t}{fill_t}{size_t}{ext}"
+        icon_path = f"{base_path}/{icon_name}{prefix}{weight_t}{grade_t}{fill_t}{size_t}{ext}"
 
-        if not os.path.exists(iconpath):
-            print(f"Icon not found. This shouldn't really happen. path: {iconpath}")
+        if not os.path.exists(icon_path):
+            print(f"Icon not found. This shouldn't really happen. path: {icon_path}")
             continue
 
         # e.g.: mso_bell.svg
         filename = f"{icon_name}{ext}"
-        path = f"{outputpath}/{filename}"
+        file_path = f"{output_path}/{filename}"
 
-        if os.path.exists(path):
+        if os.path.exists(file_path):
             print("Icon already exists, skipping")
         else:
             # preserve metadata
-            copy2(src=iconpath, dst=path)
+            copy2(src=icon_path, dst=file_path)
 
-    print(f"Saved to: {outputpath}")
-    os.makedirs(f"{outputpath}/ttf", exist_ok=True)
+    print(f"Saved to: {output_path}")
     try:
-        subprocess.run(f'fantasticon {outputpath} -o {outputpath}/ttf --debug --font-types ttf', shell=True, check=True)
+        font_path = f"{output_path}/ttf"
+        os.makedirs(font_path, exist_ok=True)
+        subprocess.run(f'fantasticon {output_path} -o {font_path} --debug --font-types ttf', shell=True, check=True)
+        shutil.copytree(src=font_path, dst=f"{input_path}/ttf", symlinks=True, dirs_exist_ok=True)
+        print(f"font saved to {input_path}/ttf, cleaning up...")
+        shutil.rmtree(path=output_path, ignore_errors=True)
+        print(f"removed {output_path}")
     except subprocess.CalledProcessError:
         print("Seems like fantasticon is not installed, skipping ttf generation")
 
