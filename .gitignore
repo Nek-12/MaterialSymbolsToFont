@@ -105,3 +105,4 @@ cython_debug/
 ## Custom
 **/materialsymbols_*
 .idea
+**/material-design-icons

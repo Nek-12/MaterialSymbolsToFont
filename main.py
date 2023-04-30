@@ -1,11 +1,13 @@
 import os
-from os import read
-from shutil import copyfile, copy2
+import subprocess
+import webbrowser
+from shutil import copy2
 
 grades = [-25, 0, 200]
 sizes = [20, 24, 40, 48]
 modes = ["outlined", "rounded", "sharp"]
 ext = ".svg"
+generator_webui_url = "https://android-iconics.mikepenz.com/"
 
 
 def main():
@@ -82,7 +84,14 @@ def main():
             copy2(src=iconpath, dst=path)
 
     print(f"Saved to: {outputpath}")
-    print("Now fantasticon.sh")
+    os.makedirs(f"{outputpath}/ttf", exist_ok=True)
+    try:
+        subprocess.run(f'fantasticon {outputpath} -o {outputpath}/ttf --debug --font-types ttf', shell=True, check=True)
+    except subprocess.CalledProcessError:
+        print("Seems like fantasticon is not installed, skipping ttf generation")
+
+    print("Generated, opening web ui")
+    webbrowser.open_new_tab(generator_webui_url)
 
 
 if __name__ == '__main__':
